@@ -4,7 +4,18 @@ connection: "redshift"
 # - include: "*.dashboard.lookml"  # include all dashboards in this project
 include: "*.view"
 
-# - explore: pages
+explore: pages {
+  fields: [
+    ALL_FIELDS*,
+    -pages.avg_page_view_duration_minutes,
+    -pages.count_distinct_pageviews,
+    -pages.count_visitors]
+  join: page_aliases_mapping__v1 {
+    type: inner
+    relationship: many_to_one
+    sql_on: COALESCE(${pages.user_id},${pages.anonymous_id}) = ${page_aliases_mapping__v1.alias} ;;
+  }
+}
 
 explore: event_facts {
   view_label: "Events"
