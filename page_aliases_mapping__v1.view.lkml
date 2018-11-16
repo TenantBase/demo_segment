@@ -32,6 +32,7 @@ FROM all_mappings
     label: "Number of TenantBase Visitors"
     type: count_distinct
     sql: ${tenantbase_visitor_id} ;;
+    drill_fields: [tenantbase_visitor_id]
   }
 
   dimension: alias {
