@@ -78,6 +78,7 @@ view: pages {
   measure: count_visitors {
     type: count_distinct
     sql: ${page_facts.looker_visitor_id} ;;
+    drill_fields: [page_facts.looker_visitor_id]
   }
 
   measure: count_pageviews {
