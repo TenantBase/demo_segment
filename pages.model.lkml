@@ -53,7 +53,7 @@ explore: event_facts {
       and event_facts.anonymous_id = COALESCE(tracks.user_id, tracks.anonymous_id)
        ;;
     relationship: one_to_one
-    fields: []
+    fields: [event]
   }
 
   join: page_facts {
