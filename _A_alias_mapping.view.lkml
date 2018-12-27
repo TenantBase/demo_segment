@@ -1,47 +1,47 @@
 view: page_aliases_mapping {
   derived_table: {
     sql_trigger_value: select current_date ;;
-    sortkeys: ["looker_visitor_id", "alias"]
+    sortkeys: ["tenantbase_visitor_id", "alias"]
     distribution: "alias"
     sql: with
 
       -- Establish all child-to-parent edges from tables (tracks, pages, aliases)
-      all_mappings as (
-        select anonymous_id
-        , user_id
-        , received_at as received_at
-        from production.tracks
+      all_mappings AS (
+        SELECT anonymous_id AS anonymous_id
+        , user_id AS user_id
+        , "timestamp" AS "timestamp"
+        FROM production.tracks
 
-        union
+        UNION
 
-        select user_id
-          , null
-          , received_at
-        from production.tracks
+        SELECT user_id AS anonymous_id
+          , NULL AS user_id
+          , "timestamp" AS "timestamp"
+        FROM production.tracks
 
-        union
+        UNION
 
-        select anonymous_id
-          , user_id
-          , received_at
-        from production.pages
+        SELECT anonymous_id AS anonymous_id
+          , user_id AS user_id
+          , "timestamp"
+        FROM production.pages
 
-        union
+        UNION
 
-        select user_id
-        , null
-        , received_at
-        from production.pages
+        SELECT user_id AS anonymous_id
+        , NULL AS user_id
+        , "timestamp"
+        FROM production.pages
       )
 
-      select
-                  distinct anonymous_id as alias
-                  , coalesce(first_value(user_id ignore nulls)
-                  over(
-                    partition by anonymous_id
-                    order by received_at
-                    rows between unbounded preceding and unbounded following),anonymous_id) as looker_visitor_id
-      from all_mappings
+      SELECT
+                  DISTINCT anonymous_id AS alias
+                  , COALESCE(FIRST_VALUE(user_id IGNORE NULLS)
+                  OVER(
+                    PARTITION BY anonymous_id
+                    ORDER BY "timestamp"
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING),anonymous_id) AS tenantbase_visitor_id
+      FROM all_mappings
        ;;
   }
 
@@ -52,17 +52,17 @@ view: page_aliases_mapping {
   }
 
   # User ID
-  dimension: looker_visitor_id {
-    sql: ${TABLE}.looker_visitor_id ;;
+  dimension: tenantbase_visitor_id {
+    sql: ${TABLE}.tenantbase_visitor_id ;;
   }
 
   measure: count {
     type: count
   }
 
-  measure: count_visitor {
+  measure: count_unique_visitor {
     type: count_distinct
-    sql: ${looker_visitor_id} ;;
+    sql: ${tenantbase_visitor_id} ;;
   }
 }
 
@@ -75,42 +75,42 @@ view: page_aliases_mapping {
 #             all_mappings as (
 #               select anonymous_id
 #                 , user_id
-#                 , received_at
+#                 , "timestamp"
 #               from hoodie.tracks
 #
 #               union
 #
 #               select user_id
 #                 , null
-#                 , received_at
+#                 , "timestamp"
 #               from hoodie.tracks
 #
 #                union
 #
 #                select previous_id
 #                 , user_id
-#                 , received_at
+#                 , "timestamp"
 #                from hoodie.aliases
 #
 #                union
 #
 #                select user_id
 #                  , null
-#                  , received_at
+#                  , "timestamp"
 #                from hoodie.aliases
 #
 #                union
 #
 #                select anonymous_id
 #                   , user_id
-#                   , received_at
+#                   , "timestamp"
 #                from hoodie.pages
 #
 #                union
 #
 #                select user_id
 #                   , null
-#                   , received_at
+#                   , "timestamp"
 #                from hoodie.pages
 #             ),
 #

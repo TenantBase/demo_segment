@@ -8,7 +8,7 @@
   - name: date
     title: "Date"
     type: date_filter
-    default_value: 2016
+    default_value: 7 days
 
   elements:
 
@@ -18,9 +18,9 @@
     model: pages
     explore: event_facts
     measures: [pages.count_pageviews, pages.count_distinct_pageviews, pages.avg_page_view_duration_minutes,
-      pages.count_visitors]
+      event_facts.count_visitors]
     hidden_fields: [pages.count_distinct_pageviews, pages.avg_page_view_duration_minutes,
-      pages.count_visitors]
+      event_facts.count_visitors]
     listen:
       date: pages.received_date
     sorts: [pages.count_pageviews desc]
@@ -39,9 +39,9 @@
     model: pages
     explore: event_facts
     measures: [pages.count_pageviews, pages.count_distinct_pageviews, pages.avg_page_view_duration_minutes,
-      pages.count_visitors]
+      event_facts.count_visitors]
     hidden_fields: [pages.count_pageviews, pages.avg_page_view_duration_minutes,
-      pages.count_visitors]
+      event_facts.count_visitors]
     listen:
       date: pages.received_date
     sorts: [pages.count_distinct_pageviews desc]
@@ -60,11 +60,11 @@
     model: pages
     explore: event_facts
     measures: [pages.count_pageviews, pages.count_distinct_pageviews, pages.avg_page_view_duration_minutes,
-      pages.count_visitors]
+      event_facts.count_visitors]
     hidden_fields: [pages.count_pageviews, pages.count_distinct_pageviews, pages.avg_page_view_duration_minutes]
     listen:
       date: pages.received_date
-    sorts: [pages.count_visitors desc]
+    sorts: [event_facts.count_visitors desc]
     limit: 500
     custom_color_enabled: false
     show_single_value_title: true
@@ -80,8 +80,8 @@
     model: pages
     explore: event_facts
     measures: [pages.count_pageviews, pages.count_distinct_pageviews, pages.avg_page_view_duration_minutes,
-      pages.count_visitors]
-    hidden_fields: [pages.count_pageviews, pages.count_distinct_pageviews, pages.count_visitors]
+      event_facts.count_visitors]
+    hidden_fields: [pages.count_pageviews, pages.count_distinct_pageviews, event_facts.count_visitors]
     listen:
       date: pages.received_date
     sorts: [pages.avg_page_view_duration_minutes desc]
@@ -150,7 +150,7 @@
     explore: event_facts
     dimensions: [pages.url]
     measures: [pages.avg_page_view_duration_minutes, pages.count_distinct_pageviews,
-      pages.count_pageviews, pages.count_visitors]
+      pages.count_pageviews, event_facts.count_visitors]
     filters:
       pages.avg_page_view_duration_minutes: NOT NULL
     listen:

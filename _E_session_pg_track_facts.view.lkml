@@ -1,17 +1,18 @@
 view: session_pg_trk_facts {
   derived_table: {
     # Rebuilds after track_facts rebuilds
-    sql_trigger_value: select COUNT(*) from ${event_facts.SQL_TABLE_NAME} ;;
+    sql_trigger_value: SELECT COUNT(*) FROM ${event_facts.SQL_TABLE_NAME} ;;
     sortkeys: ["session_id"]
     distribution: "session_id"
-    sql: select s.session_id
+    sql:
+      SELECT s.session_id
         , first_referrer
-        , max(t2s.received_at) as end_at
-        , count(case when t2s.event_source = 'tracks' then 1 else null end) as tracks_count
-      from ${sessions_pg_trk.SQL_TABLE_NAME} as s
-        inner join ${event_facts.SQL_TABLE_NAME} as t2s
-          using(session_id)
-      group by 1,2
+        , MAX(t2s."timestamp") AS end_at
+        , COUNT(CASE WHEN t2s.event_source = 'tracks' THEN 1 END) AS tracks_count
+      FROM ${sessions_pg_trk.SQL_TABLE_NAME} AS s
+        INNER JOIN ${event_facts.SQL_TABLE_NAME} AS t2s
+          USING(session_id)
+      GROUP BY 1,2
        ;;
   }
 
@@ -31,7 +32,12 @@ view: session_pg_trk_facts {
   }
 
   dimension: first_referrer_domain_mapped {
-    sql: CASE WHEN ${first_referrer_domain} like '%facebook%' THEN 'facebook' WHEN ${first_referrer_domain} like '%google%' THEN 'google' ELSE ${first_referrer_domain} END ;;
+    sql:
+      CASE
+        WHEN ${first_referrer_domain} like '%facebook%' THEN 'facebook'
+        WHEN ${first_referrer_domain} like '%google%' THEN 'google'
+        ELSE ${first_referrer_domain}
+      END ;;
   }
 
   dimension_group: end {
@@ -64,8 +70,11 @@ view: session_pg_trk_facts {
   }
 
   dimension: is_bounced_session {
-    sql: CASE WHEN ${tracks_count} = 1 THEN 'Bounced Session'
-      ELSE 'Not Bounced Session' END
+    sql:
+      CASE
+        WHEN ${tracks_count} = 1 THEN 'Bounced Session'
+        ELSE 'Not Bounced Session'
+      END
        ;;
   }
 
@@ -88,6 +97,11 @@ view: session_pg_trk_facts {
   }
 
   # ----- Measures -----
+
+  measure: time_on_site_minutes {
+    type: sum
+    sql: ${session_duration_minutes} ;;
+  }
 
   measure: avg_session_duration_minutes {
     type: average

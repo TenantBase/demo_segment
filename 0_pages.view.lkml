@@ -40,7 +40,7 @@ view: pages {
   dimension_group: received {
     type: time
     timeframes: [raw, time, date, week, month]
-    sql: ${TABLE}.received_at ;;
+    sql: ${TABLE}."timestamp" ;;
   }
 
   dimension: referrer {
@@ -77,8 +77,8 @@ view: pages {
 
   measure: count_visitors {
     type: count_distinct
-    sql: ${page_facts.looker_visitor_id} ;;
-    drill_fields: [page_facts.looker_visitor_id]
+    sql: ${page_facts.tenantbase_visitor_id} ;;
+    drill_fields: [page_facts.tenantbase_visitor_id]
   }
 
   measure: count_pageviews {
@@ -94,6 +94,6 @@ view: pages {
 
   measure: count_distinct_pageviews {
     type: number
-    sql: COUNT(DISTINCT CONCAT(${page_facts.looker_visitor_id}, ${url})) ;;
+    sql: COUNT(DISTINCT CONCAT(${page_facts.tenantbase_visitor_id}, ${url})) ;;
   }
 }

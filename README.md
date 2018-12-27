@@ -1,5 +1,8 @@
 ### What does this Block do for me?
 
+#### For all things TenantBase hopes to do, use a, b, c, d ect.
+These files use both pages and tracks to define events. Alternatively, 1,2,3 ect use exclusively tracks. Our tracks do not always capture anonymous_id and may result in indiscrepancies in the data.
+
 **(1) Full-Fledged Data Model** - This Block, built by the experts on the product teams of both Looker and Segment, provides a comprehensive, robust data model and multiple curated dashboards for Segment data.
 
 **(2) Time-to-Value** - Start gaining value out of your Segment data immediately, leveraging the analysis suggested by the Segment team.
@@ -28,7 +31,7 @@ Documentation is found in the included markdown files and linked below:
 
   a. [Session Tracks Analysis](_7a_session_tracks_analysis.md)
 
-  b. [Session Tracks and Pages Analysis](_7b_session_tracks_pages_analysis.md)
+  b. [Session Tracks and Pages Analysis](_7b_session_tracks_pages_analysis.md) - *this is the section that we use*
 
 1. [Sample Advanced Design Patterns](_8_sample_advanced_design_patterns.md)
 

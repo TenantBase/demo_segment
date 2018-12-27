@@ -1,15 +1,18 @@
 view: sessions_pg_trk {
   derived_table: {
     sortkeys: ["session_start_at"]
-    distribution: "looker_visitor_id"
-    sql_trigger_value: select count(*) from ${mapped_events.SQL_TABLE_NAME} ;;
-    sql: select row_number() over(partition by looker_visitor_id order by received_at) || ' - '||  looker_visitor_id as session_id
-      , looker_visitor_id
-      , received_at as session_start_at
-      , row_number() over(partition by looker_visitor_id order by received_at) as session_sequence_number
-      , lead(received_at) over(partition by looker_visitor_id order by received_at) as next_session_start_at
-from ${mapped_events.SQL_TABLE_NAME}
-where (idle_time_minutes > 30 or idle_time_minutes is null)
+    distribution: "tenantbase_visitor_id"
+    sql_trigger_value: SELECT COUNT(*) FROM ${mapped_events.SQL_TABLE_NAME} ;;
+    sql: SELECT
+             ROW_NUMBER() OVER(PARTITION BY tenantbase_visitor_id ORDER BY "timestamp") || ' - '||  tenantbase_visitor_id as session_id
+           , tenantbase_visitor_id
+           , "timestamp" AS session_start_at
+           , ROW_NUMBER() OVER(PARTITION BY tenantbase_visitor_id ORDER BY "timestamp") AS session_sequence_number
+           -- Default offset of lead is 1 (gives the next possible value)
+           , LEAD("timestamp") OVER(PARTITION BY tenantbase_visitor_id ORDER BY "timestamp") AS next_session_start_at
+         FROM ${mapped_events.SQL_TABLE_NAME}
+         -- Where clause indicates either end of session or first session
+         WHERE (idle_time_minutes > 30 OR idle_time_minutes is NULL)
  ;;
   }
 
@@ -18,9 +21,9 @@ where (idle_time_minutes > 30 or idle_time_minutes is null)
     sql: ${TABLE}.session_id ;;
   }
 
-  dimension: looker_visitor_id {
-    type: number
-    sql: ${TABLE}.looker_visitor_id ;;
+  dimension: tenantbase_visitor_id {
+    type: string
+    sql: ${TABLE}.tenantbase_visitor_id ;;
   }
 
   dimension_group: start {
@@ -65,7 +68,8 @@ where (idle_time_minutes > 30 or idle_time_minutes is null)
 
   measure: count_visitors {
     type: count_distinct
-    sql: ${looker_visitor_id} ;;
+    sql: ${tenantbase_visitor_id} ;;
+    drill_fields: [tenantbase_visitor_id]
   }
 
   measure: avg_sessions_per_user {
@@ -81,6 +85,6 @@ where (idle_time_minutes > 30 or idle_time_minutes is null)
   }
 
   set: detail {
-    fields: [session_id, looker_visitor_id, start_date, session_sequence_number, next_session_start_at_date]
+    fields: [session_id, tenantbase_visitor_id, start_date, session_sequence_number, next_session_start_at_date]
   }
 }

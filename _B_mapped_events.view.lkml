@@ -1,35 +1,37 @@
 view: mapped_events {
   derived_table: {
     sortkeys: ["event_id"]
-    distribution: "looker_visitor_id"
-    sql_trigger_value: select current_date ;;
-    sql: select *
-        , datediff(minutes, lag(received_at) over(partition by looker_visitor_id order by received_at), received_at) as idle_time_minutes
-      from (
-        select CONCAT(t.received_at, t.uuid) || '-t' as event_id
-          , coalesce(a2v.looker_visitor_id,a2v.alias) as looker_visitor_id
-          , t.anonymous_id
-          , t.uuid
-          , t.received_at
-          , NULL as referrer
-          , 'tracks' as event_source
-        from production.tracks as t
-        inner join ${page_aliases_mapping.SQL_TABLE_NAME} as a2v
-          on a2v.alias = coalesce(t.user_id, t.anonymous_id)
+    distribution: "tenantbase_visitor_id"
+    sql_trigger_value: SELECT current_date ;;
+    sql: SELECT *
+        , datediff(minutes, lag("timestamp") OVER(PARTITION BY tenantbase_visitor_id ORDER BY "timestamp"), "timestamp") AS idle_time_minutes
+         FROM (
+           SELECT
+               CONCAT(t."timestamp", t.uuid) || '-t' AS event_id
+             , COALESCE(a2v.tenantbase_visitor_id, a2v.alias) AS tenantbase_visitor_id
+             , t.anonymous_id
+             , t.uuid
+             , t."timestamp"
+             , NULL AS referrer
+             , 'tracks' AS event_source
+           FROM production.tracks AS t
+           INNER JOIN ${page_aliases_mapping.SQL_TABLE_NAME} AS a2v
+             ON a2v.alias = COALESCE(t.user_id, t.anonymous_id)
 
-        union all
+           UNION ALL
 
-        select CONCAT(t.received_at, t.uuid) || '-p' as event_id
-          , coalesce(a2v.looker_visitor_id,a2v.alias)
-          , t.anonymous_id
-          , t.uuid
-          , t.received_at
-          , t.referrer as referrer
-          , 'pages' as event_source
-        from production.pages as t
-        inner join ${page_aliases_mapping.SQL_TABLE_NAME} as a2v
-          on a2v.alias = coalesce(t.user_id, t.anonymous_id)
-      ) as e
+           SELECT
+               CONCAT(t."timestamp", t.uuid) || '-p' AS event_id
+             , COALESCE(a2v.tenantbase_visitor_id, a2v.alias) AS tenantbase_visitor_id
+             , t.anonymous_id
+             , t.uuid
+             , t."timestamp"
+             , t.referrer AS referrer
+             , 'pages' AS event_source
+           FROM production.pages AS t
+           INNER JOIN ${page_aliases_mapping.SQL_TABLE_NAME} AS a2v
+             ON a2v.alias = coalesce(t.user_id, t.anonymous_id)
+         ) AS e
        ;;
   }
 
@@ -37,8 +39,9 @@ view: mapped_events {
     sql: ${TABLE}.event_id ;;
   }
 
-  dimension: looker_visitor_id {
-    sql: ${TABLE}.looker_visitor_id ;;
+  dimension: tenantbase_visitor_id {
+    type: string
+    sql: ${TABLE}.tenantbase_visitor_id ;;
   }
 
   dimension: anonymous_id {
@@ -49,10 +52,10 @@ view: mapped_events {
     sql: ${TABLE}.uuid ;;
   }
 
-  dimension_group: received_at {
+  dimension_group: timestamp {
     type: time
     timeframes: [time, date, week, month]
-    sql: ${TABLE}.received_at ;;
+    sql: ${TABLE}."timestamp" ;;
   }
 
   dimension: event {
@@ -75,8 +78,8 @@ view: mapped_events {
   set: detail {
     fields: [
       event_id,
-      looker_visitor_id,
-      received_at_date,
+      tenantbase_visitor_id,
+      timestamp_date,
       event,
       referrer,
       event_source,

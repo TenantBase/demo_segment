@@ -8,13 +8,27 @@ view: page_aliases_mapping__v1 {
         SELECT
           anonymous_id,
           user_id,
-          received_at
+          "timestamp"
+        FROM production.tracks
+        UNION
+        SELECT
+          user_id AS anonymous_id,
+          NULL AS user_id,
+          "timestamp"
+        FROM production.tracks
+
+        UNION
+
+        SELECT
+          anonymous_id,
+          user_id,
+          "timestamp"
         FROM production.pages
         UNION
         SELECT
           user_id AS anonymous_id,
           NULL AS user_id,
-          received_at
+          "timestamp"
         FROM production.pages
       )
 SELECT
@@ -22,7 +36,7 @@ SELECT
   COALESCE(FIRST_VALUE(user_id IGNORE NULLS)
     OVER(
       PARTITION BY anonymous_id
-      ORDER BY received_at
+      ORDER BY "timestamp"
       ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING),anonymous_id) AS tenantbase_visitor_id
 FROM all_mappings
  ;;

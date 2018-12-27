@@ -23,9 +23,23 @@ explore: event_facts {
 
   join: pages {
     view_label: "Events"
+    fields: [
+        pages.context_campaign_content
+      , pages.context_campaign_medium
+      , pages.context_campaign_name
+      , pages.name
+      , pages.received_date
+      , pages.title
+      , pages.url
+      , pages.user_id
+      , pages.count
+      , pages.avg_page_view_duration_minutes
+      , pages.count_distinct_pageviews
+      , pages.count_pageviews
+    ]
     type: left_outer
     sql_on: event_facts.uuid = pages.uuid
-      and event_facts.received_at = pages.received_at
+      and event_facts."timestamp" = pages."timestamp"
       and event_facts.anonymous_id = pages.anonymous_id
        ;;
     relationship: one_to_one
@@ -35,8 +49,8 @@ explore: event_facts {
     view_label: "Events"
     type: left_outer
     sql_on: event_facts.event_id = concat(tracks.event_id, '-t')
-      and event_facts.received_at = tracks.received_at
-      and event_facts.anonymous_id = tracks.anonymous_id
+      and event_facts."timestamp" = tracks."timestamp"
+      and event_facts.anonymous_id = COALESCE(tracks.user_id, tracks.anonymous_id)
        ;;
     relationship: one_to_one
     fields: []
@@ -46,8 +60,8 @@ explore: event_facts {
     view_label: "Events"
     type: left_outer
     sql_on: event_facts.event_id = page_facts.event_id and
-      event_facts.received_at = page_facts.received_at and
-      event_facts.looker_visitor_id = page_facts.looker_visitor_id
+      event_facts."timestamp" = page_facts."timestamp" and
+      event_facts.tenantbase_visitor_id = page_facts.tenantbase_visitor_id
        ;;
     relationship: one_to_one
   }
