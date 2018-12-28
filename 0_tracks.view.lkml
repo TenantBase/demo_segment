@@ -22,6 +22,12 @@ view: tracks {
     sql: ${TABLE}.received_at ;;
   }
 
+  dimension_group: timestamp {
+    type: time
+    timeframes: [raw, time, date, week, month]
+    sql: ${TABLE}."timestamp" ;;
+  }
+
   dimension: user_id {
     type: string
     # hidden: true
@@ -36,7 +42,7 @@ view: tracks {
 
   dimension: event_id {
     type: string
-    sql: CONCAT(${received_raw}, ${uuid}) ;;
+    sql: CONCAT(${timestamp_raw}, ${uuid}) ;;
   }
 
   measure: count {

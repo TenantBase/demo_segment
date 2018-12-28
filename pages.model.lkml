@@ -48,9 +48,9 @@ explore: event_facts {
   join: tracks {
     view_label: "Events"
     type: left_outer
-    sql_on: event_facts.event_id = concat(tracks.event_id, '-t')
+    sql_on: ${event_facts.event_id} = concat(${tracks.event_id}, '-t')
       and event_facts."timestamp" = tracks."timestamp"
-      and event_facts.anonymous_id = COALESCE(tracks.user_id, tracks.anonymous_id)
+      and event_facts.tenantbase_visitor_id = COALESCE(tracks.user_id, tracks.anonymous_id)
        ;;
     relationship: one_to_one
     fields: [event]
