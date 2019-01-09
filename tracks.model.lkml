@@ -7,6 +7,7 @@ include: "*.view"
 include: "*.dashboard"
 
 explore: track_facts {
+  hidden: yes
   view_label: "Events"
   label: "Events"
 
@@ -55,6 +56,7 @@ explore: track_facts {
 }
 
 explore: sessions_trk {
+  hidden: yes
   join: session_trk_facts {
     view_label: "sessions"
     sql_on: ${sessions_trk.session_id} = ${session_trk_facts.session_id} ;;
@@ -69,6 +71,7 @@ explore: sessions_trk {
 }
 
 explore: funnel_explorer {
+  hidden: yes
   join: sessions_trk {
     view_label: "sessions"
     foreign_key: session_id

@@ -5,6 +5,7 @@ connection: "redshift"
 include: "*.view"
 
 explore: pages {
+  hidden: yes
   fields: [
     ALL_FIELDS*,
     -pages.avg_page_view_duration_minutes,
