@@ -4,7 +4,7 @@ view: tracks_flow {
       , a.session_id
       , a.track_sequence_number
       , a.event
-      , a.looker_visitor_id
+      , a.tenantbase_visitor_id
       , a.received_at
       , b.event as event_2
       , c.event as event_3
@@ -26,8 +26,8 @@ and a.session_id = e.session_id
 order by a.session_id, a.track_sequence_number
  ;;
     sql_trigger_value: select count(*) from ${sessions_trk.SQL_TABLE_NAME} ;;
-    sortkeys: ["event_id", "looker_visitor_id", "session_id"]
-    distribution: "looker_visitor_id"
+    sortkeys: ["event_id", "tenantbase_visitor_id", "session_id"]
+    distribution: "tenantbase_visitor_id"
   }
 
   dimension: event_id {

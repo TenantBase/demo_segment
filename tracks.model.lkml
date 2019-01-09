@@ -37,13 +37,13 @@ explore: track_facts {
   join: user_session_facts {
     view_label: "Users"
     type: left_outer
-    sql_on: ${track_facts.looker_visitor_id} = ${user_session_facts.looker_visitor_id} ;;
+    sql_on: ${track_facts.tenantbase_visitor_id} = ${user_session_facts.tenantbase_visitor_id} ;;
     relationship: many_to_one
   }
   join: users {
     view_label: "Users"
     type: left_outer
-    sql_on: ${user_session_facts.looker_visitor_id} = ${users.id} ;;
+    sql_on: ${user_session_facts.tenantbase_visitor_id} = ${users.id} ;;
     relationship: one_to_one
   }
 
@@ -63,7 +63,7 @@ explore: sessions_trk {
 
   join: user_session_facts {
     view_label: "Users"
-    sql_on: ${sessions_trk.looker_visitor_id} = ${user_session_facts.looker_visitor_id} ;;
+    sql_on: ${sessions_trk.tenantbase_visitor_id} = ${user_session_facts.tenantbase_visitor_id} ;;
     relationship: many_to_one
   }
 }
@@ -76,7 +76,7 @@ explore: funnel_explorer {
 
   join: user_session_facts {
     view_label: "Users"
-    foreign_key: sessions_trk.looker_visitor_id
+    foreign_key: sessions_trk.tenantbase_visitor_id
   }
 
   join: session_trk_facts {

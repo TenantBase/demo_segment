@@ -6,11 +6,11 @@ view: sessions_trk {
     sql_trigger_value: select count(*) from ${mapped_tracks.SQL_TABLE_NAME} ;;
     sortkeys: ["session_id"]
     distribution: "tenantbase_visitor_id"
-    sql: select row_number() over(partition by tenantbase_visitor_id order by received_at) || ' - ' || looker_visitor_id as session_id
-      , looker_visitor_id
+    sql: select row_number() over(partition by tenantbase_visitor_id order by received_at) || ' - ' || tenantbase_visitor_id as session_id
+      , tenantbase_visitor_id
       , received_at as session_start_at
-      , row_number() over(partition by looker_visitor_id order by received_at) as session_sequence_number
-      , lead(received_at) over(partition by looker_visitor_id order by received_at) as next_session_start_at
+      , row_number() over(partition by tenantbase_visitor_id order by received_at) as session_sequence_number
+      , lead(received_at) over(partition by tenantbase_visitor_id order by received_at) as next_session_start_at
 from ${mapped_tracks.SQL_TABLE_NAME}
 where (idle_time_minutes > 30 or idle_time_minutes is null)
  ;;
@@ -21,9 +21,9 @@ where (idle_time_minutes > 30 or idle_time_minutes is null)
     sql: ${TABLE}.session_id ;;
   }
 
-  dimension: looker_visitor_id {
+  dimension: tenantbase_visitor_id {
     type: string
-    sql: ${TABLE}.looker_visitor_id ;;
+    sql: ${TABLE}.tenantbase_visitor_id ;;
   }
 
   dimension_group: start {
@@ -68,7 +68,7 @@ where (idle_time_minutes > 30 or idle_time_minutes is null)
 
   measure: count_visitors {
     type: count_distinct
-    sql: ${looker_visitor_id} ;;
+    sql: ${tenantbase_visitor_id} ;;
   }
 
   measure: avg_sessions_per_user {
@@ -84,6 +84,6 @@ where (idle_time_minutes > 30 or idle_time_minutes is null)
   }
 
   set: detail {
-    fields: [session_id, looker_visitor_id, start_date, sequence_number, next_session_start_at_date]
+    fields: [session_id, tenantbase_visitor_id, start_date, sequence_number, next_session_start_at_date]
   }
 }
