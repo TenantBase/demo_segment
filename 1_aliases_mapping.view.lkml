@@ -1,7 +1,7 @@
 view: aliases_mapping {
   derived_table: {
     sql_trigger_value: select current_date ;;
-    sortkeys: ["looker_visitor_id", "alias"]
+    sortkeys: ["tenantbase_visitor_id", "alias"]
     distribution: "alias"
     sql: with
       all_mappings as (
@@ -26,7 +26,7 @@ view: aliases_mapping {
         over(
           partition by anonymous_id
           order by received_at
-          rows between unbounded preceding and unbounded following),anonymous_id) as looker_visitor_id
+          rows between unbounded preceding and unbounded following),anonymous_id) as tenantbase_visitor_id
       from all_mappings
        ;;
   }
@@ -39,8 +39,8 @@ view: aliases_mapping {
   }
 
   # User ID
-  dimension: looker_visitor_id {
+  dimension: tenantbase_visitor_id {
     type: string
-    sql: ${TABLE}.looker_visitor_id ;;
+    sql: ${TABLE}.tenantbase_visitor_id ;;
   }
 }

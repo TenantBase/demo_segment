@@ -3,14 +3,14 @@
 view: mapped_tracks {
   derived_table: {
     sortkeys: ["event_id"]
-    distribution: "looker_visitor_id"
+    distribution: "tenantbase_visitor_id"
     sql_trigger_value: select current_date ;;
     sql: select *
-        , datediff(minutes, lag(received_at) over(partition by looker_visitor_id order by received_at), received_at) as idle_time_minutes
+        , datediff(minutes, lag(received_at) over(partition by tenantbase_visitor_id order by received_at), received_at) as idle_time_minutes
         from (
           select CONCAT(t.received_at, t.uuid) as event_id
           , t.anonymous_id
-          , a2v.looker_visitor_id
+          , a2v.tenantbase_visitor_id
           , t.received_at
           , t.event as event
           , t.uuid
@@ -33,8 +33,8 @@ view: mapped_tracks {
     sql: ${TABLE}.event_id ;;
   }
 
-  dimension: looker_visitor_id {
-    sql: ${TABLE}.looker_visitor_id ;;
+  dimension: tenantbase_visitor_id {
+    sql: ${TABLE}.tenantbase_visitor_id ;;
   }
 
   dimension_group: received_at {
@@ -53,6 +53,6 @@ view: mapped_tracks {
   }
 
   set: detail {
-    fields: [event_id, looker_visitor_id, received_at_date, event, idle_time_minutes]
+    fields: [event_id, tenantbase_visitor_id, received_at_date, event, idle_time_minutes]
   }
 }

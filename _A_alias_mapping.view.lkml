@@ -134,7 +134,7 @@ view: page_aliases_mapping {
 #                   , r2.alias
 #                   , r1.alias
 #                   , r0.alias
-#                 ) as looker_visitor_id
+#                 ) as tenantbase_visitor_id
 #             from realiases r0
 #               left join realiases r1 on r0.next_alias = r1.alias
 #               left join realiases r2 on r1.next_alias = r2.alias
